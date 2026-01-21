@@ -3,3 +3,4 @@ pymupdf
 django
 gunicorn
 razorpay
+whitenoise
