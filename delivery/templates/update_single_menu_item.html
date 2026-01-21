@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Menu Item</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-left"><h2>🍔 FoodieFlow</h2></div>
+    <div class="nav-right nav-actions">
+        <button onclick="history.back()" class="btn-nav-primary">Back</button>
+    </div>
+</div>
+<div class="card-grid">
+    {% for item in itemList %}
+    <div class="card">
+        <img src="{{ item.picture }}" alt="{{ item.name }}">
+        <div class="card-body">
+            <h3 class="card-title">{{ item.name }}</h3>
+            <p class="card-text">{{ item.description }}</p>
+            <p class="price">₹{{ item.price }}</p>
+            
+            <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+    {% if item.vegeterian %}
+        <span class="veg" style="color: #27ae60; font-size: 0.9rem;">🌱 Veg</span>
+    {% else %}
+        <span class="nonveg" style="color: #e67e22; font-size: 0.9rem;">🍗 Non-Veg</span>
+    {% endif %}
+
+    <div class="actions" style="display: flex; gap: 15px; align-items: center;">
+        <a href="{% url 'update_menu_item' item.id %}" title="Edit" style="text-decoration: none; color: #0984e3; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+            ✏️ <span style="font-size: 0.85rem;">Edit</span>
+        </a>
+       
+    </div>
+</div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No menu items added yet.</p>
+    {% endfor %}
+</div>
+<div class="container center-flex">
+    <div class="card auth-card" style="width: 100%; max-width: 500px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 style="margin: 0;">Edit Dish: {{ item.name }}</h2>
+            <a href="{% url 'delete_menu_item' item.id %}" 
+               class="btn-delete" 
+               style="text-decoration: none; font-size: 1.5rem;"
+               onclick="return confirm('Are you sure you want to delete this item?')">
+               🗑️
+            </a>
+        </div>
+        <hr>
+        <form action="{% url 'update_menu_item' item.id %}" method="post">
+            {% csrf_token %}
+            
+            <label>Dish Name</label>
+            <input type="text" name="name" value="{{ item.name }}" required>
+
+            <label>Description</label>
+            <textarea name="description" rows="3" style="width:100%; border-radius: 8px; border: 1px solid #ddd; padding: 10px;">{{ item.description }}</textarea>
+
+            <label>Price (₹)</label>
+            <input type="number" name="price" value="{{ item.price }}" step="0.01" required>
+
+            <label>Picture URL</label>
+            <input type="text" name="picture" value="{{ item.picture }}">
+
+            <div style="margin: 15px 0;">
+                <input type="checkbox" name="vegeterian" id="veg" {% if item.vegeterian %}checked{% endif %}>
+                <label for="veg" style="display: inline; margin-left: 10px;">Is Vegetarian?</label>
+            </div>
+
+            <button type="submit" class="btn full-width">Update Item</button>
+            
+        </form>
+    </div>
+</div>
+</body>
+</html>

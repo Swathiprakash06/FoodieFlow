@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Your Cart</title>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        <h2>🍔 FoodieFlow</h2>
+    </div>
+    <div class="nav-right nav-actions">
+        <button onclick="history.back()" class="btn-nav-primary">Back</button>
+    </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="container main-layout">
+
+    <!-- CART ITEMS -->
+    <div class="content-area">
+        <h1>Your Cart</h1>
+
+       {% for ci in cart_items %}
+<div class="cart-item-card" id="item-row-{{ ci.item.id }}">
+
+    <img src="{{ ci.item.picture }}" class="cart-thumb">
+
+    <div class="item-details">
+        <h3>{{ ci.item.name }}</h3>
+        <p class="price">₹{{ ci.item.price }}</p>
+    </div>
+
+    <div class="quantity-controls">
+        <button class="qty-btn" onclick="updateQty('{{ ci.item.id }}', -1)">−</button>
+        <span id="qty-{{ ci.item.id }}" class="qty-value">{{ ci.quantity }}</span>
+        <button class="qty-btn" onclick="updateQty('{{ ci.item.id }}', 1)">+</button>
+    </div>
+<a href="{% url 'remove_from_cart' ci.item.id username %}" class="btn-delete">🗑️</a>
+</div>
+{% endfor %}      
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div class="sidebar">
+        <div class="card card-body">
+            <h3>Order Summary</h3>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <span id="subtotal">₹{{ total_price }}</span>
+            </div>
+            <div class="summary-line total">
+                <span>Total Amount</span>
+                <span id="total-amount">₹{{ total_price }}</span>
+            </div>
+
+            <!-- CHECKOUT -->
+            <form action="{% url 'checkout' username %}" method="get">
+                <button type="submit" class="btn full-width" id="checkout-btn">
+                    Checkout
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- DJANGO MESSAGES -->
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<!-- JAVASCRIPT -->
+<script>
+/* Auto-hide alerts */
+setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(alert => {
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 400);
+    });
+}, 3000);
+
+async function updateQty(itemId, change) {
+    const action = change > 0 ? 'increase' : 'decrease';
+    const username = "{{ username }}"; // Injected from Django context
+    
+    // 1. Call the backend
+    try {
+        const response = await fetch(`/update_cart_quantity/${itemId}/${username}/?action=${action}`);
+        const data = await response.json();
+
+        if (data.status === 'removed') {
+            removeItem(itemId);
+        } else {
+            // 2. Update UI only after server confirms success
+            const qtyElement = document.getElementById(`qty-${itemId}`);
+            qtyElement.innerText = data.new_quantity;
+            recalculateTotal();
+        }
+    } catch (error) {
+        console.error("Failed to update quantity:", error);
+        alert("Could not update cart. Please check your connection.");
+    }
+}
+/* Remove item */
+function removeItem(itemId) {
+    const row = document.getElementById(`item-row-${itemId}`);
+    if (!row) return;
+
+    row.style.opacity = '0';
+
+    setTimeout(() => {
+        row.remove();
+        recalculateTotal();
+        updateCheckoutState();
+    }, 300);
+}
+
+/* Recalculate totals */
+function recalculateTotal() {
+    let total = 0;
+
+    document.querySelectorAll('.cart-item-card').forEach(card => {
+        // Get price text and clean it aggressively
+        let priceText = card.querySelector('.price').innerText
+            .replace('₹', '')           // remove rupee
+            .replace(/[^0-9.]/g, '');   // remove everything except digits & dot
+
+        const price = parseFloat(priceText) || 0;
+
+        // Quantity is safe
+        const qtyElement = card.querySelector('.qty-value');
+        const qty = parseInt(qtyElement.innerText) || 1;
+
+        total += price * qty;
+    });
+
+    const formatted = total.toFixed(2);
+    document.getElementById('subtotal').innerText = `₹${formatted}`;
+    document.getElementById('total-amount').innerText = `₹${formatted}`;
+}
+
+/* Disable checkout if cart empty */
+function updateCheckoutState() {
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const hasItems = document.querySelectorAll('.cart-item-card').length > 0;
+
+    if (!hasItems) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.opacity = '0.5';
+        checkoutBtn.style.cursor = 'not-allowed';
+    } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.opacity = '1';
+        checkoutBtn.style.cursor = 'pointer';
+    }
+}
+
+/* On page load */
+document.addEventListener("DOMContentLoaded", () => {
+    recalculateTotal();           // make sure correct on first load
+    updateCheckoutState();
+});
+</script>
+
+</body>
+</html>

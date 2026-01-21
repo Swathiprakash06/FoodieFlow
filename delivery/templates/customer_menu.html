@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Customer Page</title>
+</head>
+<body>
+    <div class="navbar">
+    <h2>🍴 FoodieFlow</h2>
+    <div class="nav-right nav-actions">
+        <form action="{% url 'show_cart' username %}" method="get">
+            <button type="submit" class="btn-nav-primary">
+               Show Cart
+            </button>
+        </form>
+        <div class="nav-right nav-actions">
+        <button onclick="history.back()" class="btn-nav-primary">Back</button>
+    </div>
+    </div>
+    
+</div>
+
+<div class="container">
+    <div class="restaurant-header">
+        <h1>Menu</h1>
+        <p>Browsing items for this restaurant</p>
+    </div>
+
+    <div class="card-grid">
+        {% for item in itemList %}
+        <div class="card menu-card">
+            <div class="image-container">
+                <img src="{{ item.picture }}" alt="{{ item.name }}">
+                {% if item.vegeterian %}
+                    <span class="badge veg-badge">🌱 Veg</span>
+                {% else %}
+                    <span class="badge nonveg-badge">🍗 Non-Veg</span>
+                {% endif %}
+            </div>
+            
+            <div class="card-body">
+                <div class="flex-row">
+                    <h3 class="card-title">{{ item.name }}</h3>
+                    <span class="price-tag">₹{{ item.price }}</span>
+                </div>
+                <p class="card-text text-muted">{{ item.description }}</p>
+                
+                <a href="{% url 'add_to_cart' item.id username %}" class="btn full-width">Add to Cart</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(t => {
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 400);
+    });
+}, 3000);
+</script>
+</body>
+</html>

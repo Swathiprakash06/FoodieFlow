@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to FoodieFlow</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+  
+</div>
+    <div class="auth-page-wrapper">
+        <div class="auth-card-enhanced">
+            <div class="welcome-header">
+                <h2>Welcome to FoodieFlow 🍽️</h2>
+                <p>Order food from the best nearby restaurants with ease.</p>
+            </div>
+
+            <div class="welcome-actions">
+                <a href="{% url 'open_signup' %}" class="btn full-width">Create Account</a>
+                <div class="divider"><span>OR</span></div>
+                <a href="{% url 'open_signin' %}" class="btn btn-outline full-width">Sign In to Order</a>
+            </div>
+
+            <p class="auth-footer" style="margin-top: 20px;">
+                By continuing, you agree to our <a href="#">Terms of Service</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

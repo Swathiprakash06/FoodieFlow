@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Order Summary</title>
+    <style>
+        /* This centering logic ensures the navbar stays at the top while content centers */
+        .order-success-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Horizontal centering */
+            justify-content: center; /* Vertical centering */
+            text-align: center;
+            min-height: 80vh; /* Takes up most of the viewport height */
+            padding: 20px;
+        }
+
+        .order-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .nav-actions-centered {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-left">
+            <h2>🍔 FoodieFlow</h2>
+        </div>
+        <div class="nav-right nav-actions">
+            <button onclick="history.back()" class="btn-nav-primary">
+                Back
+            </button>
+        </div>
+    </div>
+
+    <div class="order-success-container">
+        <div class="order-card">
+            <div style="font-size: 4rem; margin-bottom: 20px;">✅</div>
+            
+            <h1>Thank you for your order, {{ username }}!</h1>
+
+            
+
+            <H5 class="text-muted">Your order will be delivered to your location shortly. Thank you for choosing FoodieFlow!</H5>
+
+            <div class="nav-actions-centered">
+                {% if cart_items %}
+                    <form action="{% url 'customer_menu' cart_items.0.restaurant.id username %}" method="get">
+                        <button type="submit" class="btn-nav-primary">
+                            Back to Restaurants
+                        </button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'index' %}" method="get">
+                        <button type="submit" class="btn-nav-primary">
+                            Back to Home
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

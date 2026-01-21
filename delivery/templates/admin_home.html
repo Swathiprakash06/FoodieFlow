@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" intial-scale="1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Admin Page</title>
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-left">
+        <h2>🍔 FoodieFlow</h2>
+    </div>
+    <div class="nav-right nav-actions">
+        <button onclick="history.back()" class="btn-nav-primary">
+            Back
+        </button>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Welcome, Admin User!</h1>
+    <p>Manage restaurants, menus, and monitor metrics with ease.</p>
+
+    <h3>Overview</h3>
+     <div class="stats-row">
+    <div class="stat-card">
+        <h4>Total Restaurants</h4>
+        <h2>{{ total_restaurants }}</h2>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Menu Items</h4>
+        <h2>{{ total_items }}</h2>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Total Revenue</h4>
+        <h2>₹{{ total_revenue }}</h2>
+    </div>
+</div>
+
+    <h3>Quick Actions</h3>
+    <a href="open_add_restaurant" class="btn">Add New Restaurant</a>
+    <a href="show_restaurant" class="btn btn-outline">Show Restaurants</a>
+</div>
+</body>
+</html>

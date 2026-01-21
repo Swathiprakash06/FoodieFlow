@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" intial-scale="1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Customer Page</title>
+</head>
+<body>
+    <div class="navbar">
+    <div class="nav-left">
+        <h2>🍔 FoodieFlow</h2>
+    </div>
+    <div class="nav-right">
+        
+        <button onclick="history.back()" class="btn-icon-text">
+            <span class="icon"></span>Back
+        </button>
+    </div>
+</div>
+
+    <div class="container">
+    <h1>Discover Delicious Food Near You</h1>
+    
+
+    <div class="card-grid">
+        {% for r in restaurantList %}
+        <div class="card">
+            <img src="{{ r.picture }}">
+            <div class="card-body">
+                <h3 class="card-title">{{ r.name }}</h3>
+                <span class="badge-cuisine">{{ r.cuisine }}</span>
+                <p>⭐ {{ r.rating }} </p>
+                <a href="{% url 'view_menu' r.id username %}" class="btn full-width">View Menu</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>  
